@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChatGPT Business vs Plus: What Small Teams Should Know — Northwind Ops</title>
+<style>
+  :root {
+    --bg: #fff;
+    --text: #1a1a1a;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #1e3a5f;
+    --card-bg: #f9fafb;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+  }
+  nav .nav-inner {
+    max-width: 800px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  nav .logo { font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; letter-spacing: -0.3px; }
+  nav .logo span { color: var(--accent); }
+  nav .back-link { font-size: 14px; color: var(--muted); text-decoration: none; }
+  nav .back-link:hover { color: var(--text); }
+
+  article {
+    max-width: 720px; margin: 0 auto; padding: 48px 24px 80px;
+  }
+  article h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.3; margin-bottom: 8px; }
+  article .meta { font-size: 14px; color: var(--muted); margin-bottom: 36px; }
+  article h2 { font-size: 22px; font-weight: 600; margin: 40px 0 12px; color: var(--accent); }
+  article p { margin-bottom: 18px; }
+  article ul, article ol { margin: 0 0 18px 24px; }
+  article li { margin-bottom: 8px; }
+  article blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 12px 18px; margin: 24px 0;
+    background: var(--card-bg);
+    color: #444; font-style: italic;
+  }
+  article strong { color: #111; }
+  article a { color: var(--accent); }
+
+  footer {
+    background: #111; color: #9ca3af; padding: 48px 24px 32px;
+    text-align: center; font-size: 13px;
+  }
+  footer a { color: #9ca3af; text-decoration: none; }
+  footer a:hover { color: #fff; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">Northwind<span>Ops</span></a>
+    <a href="index.html#articles" class="back-link">&larr; Back to articles</a>
+  </div>
+</nav>
+
+<article>
+  <h1>ChatGPT Business vs Plus: What Small Teams Should Know</h1>
+  <p class="meta">August 15, 2026 &middot; Wei-Chen Lin &middot; 5 min read</p>
+
+  <p>
+    I've set up ChatGPT Business for about a dozen small teams now — mostly agencies and a couple of e-commerce shops. Almost every single one of them asked the same question: "Can't we just use Plus? It's cheaper."
+  </p>
+
+  <p>
+    The short answer is: it depends. But the real answer is more interesting, and I think worth writing down because most of the comparison articles out there are either written by OpenAI or by people who've never actually deployed it for a real team.
+  </p>
+
+  <h2>The pricing math — it's not as simple as $20 vs $25</h2>
+
+  <p>
+    At first glance, Plus is $20/month per person and Business is $25/month per person (monthly billing). So Business costs $5 more per person. If you have a 5-person team, that's $25 extra per month. Not nothing, but not huge either.
+  </p>
+
+  <p>
+    But here's what most people miss: with Plus, every person has their own account, their own billing, their own chat history. There is zero shared workspace. If someone on your team figures out a good prompt or builds a useful custom GPT, they have to manually share it. Half the time they don't. Knowledge stays siloed.
+  </p>
+
+  <p>
+    With Business, you get a shared workspace. Custom GPTs live in the workspace. Chat history is private by default but you can share specific conversations. Admin panel lets you see usage across the team — who's actually using it and who's not. This alone has saved one of my clients about $60/month because they realized two of their paid seats were barely logging in.
+  </p>
+
+  <h2>When Plus makes sense</h2>
+
+  <p>
+    If your team is 2-3 people, everyone works independently, and nobody needs to share prompts or GPTs — Plus is fine. I still recommend it for solo consultants, freelancers, and very small teams where collaboration isn't the point.
+  </p>
+
+  <p>
+    Also worth noting: Plus gives you access to GPT-5.4 Thinking and some advanced features. Business gets the same model access. There's no feature gap on the AI side. The difference is entirely in the workspace and admin tools.
+  </p>
+
+  <h2>When Business is worth the extra $5</h2>
+
+  <ul>
+    <li><strong>You have 4+ people.</strong> At this size, the admin tools alone pay for themselves. You need to know who's using the tool and whether you're getting value.</li>
+    <li><strong>You want shared custom GPTs.</strong> If your team has standard workflows — like a specific way to draft proposals, respond to customer emails, or analyze data — you want those prompts built once and used by everyone. Plus can't do this.</li>
+    <li><strong>You care about data not training the model.</strong> Business plan excludes your data from OpenAI's training by default. On Plus, you have to opt out manually (and most people don't know this exists).</li>
+    <li><strong>You have compliance concerns.</strong> Business gives you a basic admin console, usage reports, and the ability to manage seats. It's not enterprise-grade, but it's enough for most small teams.</li>
+  </ul>
+
+  <h2>One thing nobody tells you</h2>
+
+  <p>
+    The onboarding matters more than the plan. I've seen teams on Business that barely use it, and teams on Plus that have built incredible workflows. The difference is whether someone on the team actually spends time setting things up and training people.
+  </p>
+
+  <p>
+    If you're going with Business, allocate at least a few hours in the first week for someone to set up the workspace, build a couple of starter GPTs, and walk the team through it. Otherwise you're paying extra for features nobody touches.
+  </p>
+
+  <h2>Bottom line</h2>
+
+  <p>
+    For most teams I work with (4-15 people), Business is the right call — not because the AI is better, but because the collaboration and admin features actually get the tool adopted across the team. The extra $5/person is cheap compared to the cost of people not using it at all.
+  </p>
+
+  <p>
+    For very small teams or solo operators, stick with Plus. The workspace features don't matter when you're the only user.
+  </p>
+
+  <p style="margin-top:40px;padding-top:24px;border-top:1px solid var(--border);font-size:14px;color:var(--muted);">
+    <em>Have questions about setting up ChatGPT for your team? <a href="mailto:momotzuyu@icloud.com">Get in touch</a> — happy to chat.</em>
+  </p>
+</article>
+
+<footer>
+  <p>&copy; 2026 Northwind Ops &middot; <a href="index.html">Home</a></p>
+</footer>
+
+</body>
+</html>
