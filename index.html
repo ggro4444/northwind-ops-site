@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Northwind Ops — Operations & AI Consulting</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --text: #1a1a1a;
+    --muted: #666;
+    --border: #e5e5e5;
+    --accent: #1e3a5f;
+    --card-bg: #fff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  header {
+    padding: 48px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+  header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+  header .tagline {
+    color: var(--muted);
+    font-size: 17px;
+    margin-top: 6px;
+  }
+  section { margin-bottom: 56px; }
+  section h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    letter-spacing: -0.2px;
+    color: var(--accent);
+  }
+  section p { margin-bottom: 12px; color: #333; }
+  .services {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .service-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .service-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .service-card p { font-size: 14px; color: var(--muted); margin: 0; }
+  .about-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  .about-text p { margin-bottom: 8px; }
+  .contact-list { list-style: none; }
+  .contact-list li { margin-bottom: 8px; }
+  .contact-list a { color: var(--accent); text-decoration: none; }
+  .contact-list a:hover { text-decoration: underline; }
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    margin-top: 48px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  @media (max-width: 520px) {
+    .services { grid-template-columns: 1fr; }
+    header h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Northwind Ops</h1>
+    <p class="tagline">Operations &amp; AI Consulting</p>
+  </header>
+
+  <section>
+    <h2>What We Do</h2>
+    <p>
+      We help small teams and independent businesses work smarter — 
+      streamlining operations, setting up AI tools, and cutting through the noise 
+      so you can focus on what actually matters.
+    </p>
+    <p>
+      Based in Taiwan, working with clients across Asia and the US. 
+      Whether you need help with workflow automation, ChatGPT integration, 
+      or just figuring out which AI tools are worth your time — we handle the heavy lifting.
+    </p>
+  </section>
+
+  <section>
+    <h2>Services</h2>
+    <div class="services">
+      <div class="service-card">
+        <h3>Operations Consulting</h3>
+        <p>Process review, workflow mapping, and optimization for small teams.</p>
+      </div>
+      <div class="service-card">
+        <h3>AI &amp; Automation</h3>
+        <p>Setting up ChatGPT, Claude, and other AI tools for daily business use.</p>
+      </div>
+      <div class="service-card">
+        <h3>Workflow Optimization</h3>
+        <p>From email chaos to structured pipelines — we make things run smoothly.</p>
+      </div>
+      <div class="service-card">
+        <h3>OpenAI Integration</h3>
+        <p>ChatGPT Business setup, team onboarding, and custom workflow design.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>About</h2>
+    <div class="about-grid">
+      <div class="avatar">W</div>
+      <div class="about-text">
+        <p><strong>Wei-Chen Lin</strong> — Founder &amp; Consultant</p>
+        <p>
+          Independent consultant with a background in operations and process management. 
+          Currently focused on helping small teams adopt AI tools without the corporate overhead. 
+          Based in Taiwan, working remotely with clients worldwide.
+        </p>
+        <p>
+          Previously handled ops and data work for a few regional teams. 
+          Started Northwind Ops to keep things simple — no bloated retainers, 
+          just practical help where it's needed.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Contact</h2>
+    <ul class="contact-list">
+      <li>Email: <a href="mailto:momotzuyu@icloud.com">momotzuyu@icloud.com</a></li>
+      <li>Domain: northwindops.dpdns.org</li>
+      <li>Location: Taiwan</li>
+    </ul>
+  </section>
+
+  <footer>
+    &copy; 2026 Northwind Ops. All rights reserved.
+  </footer>
+
+</div>
+
+</body>
+</html>
