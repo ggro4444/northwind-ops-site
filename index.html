@@ -6,178 +6,396 @@
 <title>Northwind Ops — Operations & AI Consulting</title>
 <style>
   :root {
-    --bg: #fafafa;
+    --bg: #fff;
     --text: #1a1a1a;
-    --muted: #666;
-    --border: #e5e5e5;
+    --muted: #6b7280;
+    --border: #e5e7eb;
     --accent: #1e3a5f;
-    --card-bg: #fff;
+    --accent-light: #e8edf3;
+    --card-bg: #f9fafb;
+    --hero-bg: #f3f4f6;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
+    line-height: 1.7;
     font-size: 16px;
+    -webkit-font-smoothing: antialiased;
   }
-  .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
-  header {
-    padding: 48px 0 32px;
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border);
-    margin-bottom: 48px;
+    padding: 0 24px;
   }
-  header h1 {
-    font-size: 28px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
+  nav .nav-inner {
+    max-width: 960px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
   }
-  header .tagline {
-    color: var(--muted);
-    font-size: 17px;
-    margin-top: 6px;
+  nav .logo { font-weight: 700; font-size: 18px; color: var(--text); text-decoration: none; letter-spacing: -0.3px; }
+  nav .logo span { color: var(--accent); }
+  nav .nav-links { display: flex; gap: 28px; list-style: none; }
+  nav .nav-links a {
+    text-decoration: none; color: var(--muted); font-size: 14px; font-weight: 500;
+    transition: color .15s;
   }
-  section { margin-bottom: 56px; }
-  section h2 {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    letter-spacing: -0.2px;
-    color: var(--accent);
+  nav .nav-links a:hover { color: var(--text); }
+  nav .nav-cta {
+    background: var(--accent); color: #fff; padding: 8px 18px;
+    border-radius: 6px; font-size: 14px; font-weight: 600; text-decoration: none;
+    transition: opacity .15s;
   }
-  section p { margin-bottom: 12px; color: #333; }
-  .services {
+  nav .nav-cta:hover { opacity: .85; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--hero-bg);
+    padding: 80px 24px 64px;
+    text-align: center;
+  }
+  .hero-inner { max-width: 680px; margin: 0 auto; }
+  .hero h1 { font-size: 38px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 16px; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { font-size: 18px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+  .hero .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: #fff; padding: 12px 28px;
+    border-radius: 8px; font-size: 15px; font-weight: 600; text-decoration: none;
+    transition: opacity .15s;
+  }
+  .btn-primary:hover { opacity: .85; }
+  .btn-secondary {
+    background: #fff; color: var(--text); padding: 12px 28px;
+    border-radius: 8px; font-size: 15px; font-weight: 600; text-decoration: none;
+    border: 1px solid var(--border); transition: background .15s;
+  }
+  .btn-secondary:hover { background: var(--card-bg); }
+
+  /* ── SECTIONS ── */
+  section { padding: 72px 24px; }
+  section:nth-of-type(even) { background: var(--card-bg); }
+  .section-inner { max-width: 960px; margin: 0 auto; }
+  .section-label {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.2px; color: var(--accent); margin-bottom: 8px;
+  }
+  section h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 12px; }
+  section .section-desc { font-size: 16px; color: var(--muted); max-width: 600px; margin-bottom: 36px; }
+
+  /* ── SERVICES ── */
+  .services-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
   }
   .service-card {
-    background: var(--card-bg);
+    background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
+    border-radius: 10px;
+    padding: 28px 24px;
+    transition: box-shadow .2s;
   }
-  .service-card h3 {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 6px;
+  .service-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .service-card .icon {
+    width: 40px; height: 40px; border-radius: 8px;
+    background: var(--accent-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 16px;
   }
-  .service-card p { font-size: 14px; color: var(--muted); margin: 0; }
-  .about-grid {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 20px;
+  .service-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+  .service-card p { font-size: 14px; color: var(--muted); line-height: 1.6; margin: 0; }
+
+  /* ── HOW WE WORK ── */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+  .step { text-align: center; }
+  .step-num {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; margin: 0 auto 14px;
+  }
+  .step h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .step p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* ── ABOUT ── */
+  .about-content {
+    display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: start;
+  }
+  .about-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px; font-weight: 700; flex-shrink: 0;
+  }
+  .about-text p { margin-bottom: 12px; color: #333; }
+
+  /* ── ARTICLES ── */
+  .articles-list { list-style: none; }
+  .articles-list li {
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .articles-list li:last-child { border: none; }
+  .articles-list a { text-decoration: none; color: var(--text); font-weight: 500; }
+  .articles-list a:hover { color: var(--accent); }
+  .articles-list .date { font-size: 12px; color: var(--muted); display: block; margin-top: 2px; }
+
+  /* ── CONTACT ── */
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
     align-items: start;
   }
-  .avatar {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: 600;
-  }
-  .about-text p { margin-bottom: 8px; }
-  .contact-list { list-style: none; }
-  .contact-list li { margin-bottom: 8px; }
-  .contact-list a { color: var(--accent); text-decoration: none; }
-  .contact-list a:hover { text-decoration: underline; }
+  .contact-info { list-style: none; }
+  .contact-info li { margin-bottom: 12px; font-size: 15px; }
+  .contact-info a { color: var(--accent); text-decoration: none; }
+  .contact-info a:hover { text-decoration: underline; }
+
+  /* ── FOOTER ── */
   footer {
-    border-top: 1px solid var(--border);
-    padding: 32px 0;
-    margin-top: 48px;
-    color: var(--muted);
-    font-size: 14px;
+    background: #111; color: #9ca3af; padding: 48px 24px 32px;
   }
-  @media (max-width: 520px) {
-    .services { grid-template-columns: 1fr; }
-    header h1 { font-size: 24px; }
+  .footer-inner { max-width: 960px; margin: 0 auto; }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px;
+    margin-bottom: 32px;
+  }
+  footer h4 { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  footer a { color: #9ca3af; text-decoration: none; font-size: 14px; }
+  footer a:hover { color: #fff; }
+  footer ul { list-style: none; }
+  footer ul li { margin-bottom: 8px; }
+  footer .footer-bottom {
+    border-top: 1px solid #333; padding-top: 20px;
+    font-size: 13px; display: flex; justify-content: space-between;
+  }
+  footer .footer-brand { color: #fff; font-weight: 600; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    nav .nav-links { display: none; }
+    .hero h1 { font-size: 28px; }
+    .about-content { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
-<div class="container">
-
-  <header>
-    <h1>Northwind Ops</h1>
-    <p class="tagline">Operations &amp; AI Consulting</p>
-  </header>
-
-  <section>
-    <h2>What We Do</h2>
-    <p>
-      We help small teams and independent businesses work smarter — 
-      streamlining operations, setting up AI tools, and cutting through the noise 
-      so you can focus on what actually matters.
-    </p>
-    <p>
-      Based in Taiwan, working with clients across Asia and the US. 
-      Whether you need help with workflow automation, ChatGPT integration, 
-      or just figuring out which AI tools are worth your time — we handle the heavy lifting.
-    </p>
-  </section>
-
-  <section>
-    <h2>Services</h2>
-    <div class="services">
-      <div class="service-card">
-        <h3>Operations Consulting</h3>
-        <p>Process review, workflow mapping, and optimization for small teams.</p>
-      </div>
-      <div class="service-card">
-        <h3>AI &amp; Automation</h3>
-        <p>Setting up ChatGPT, Claude, and other AI tools for daily business use.</p>
-      </div>
-      <div class="service-card">
-        <h3>Workflow Optimization</h3>
-        <p>From email chaos to structured pipelines — we make things run smoothly.</p>
-      </div>
-      <div class="service-card">
-        <h3>OpenAI Integration</h3>
-        <p>ChatGPT Business setup, team onboarding, and custom workflow design.</p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2>About</h2>
-    <div class="about-grid">
-      <div class="avatar">W</div>
-      <div class="about-text">
-        <p><strong>Wei-Chen Lin</strong> — Founder &amp; Consultant</p>
-        <p>
-          Independent consultant with a background in operations and process management. 
-          Currently focused on helping small teams adopt AI tools without the corporate overhead. 
-          Based in Taiwan, working remotely with clients worldwide.
-        </p>
-        <p>
-          Previously handled ops and data work for a few regional teams. 
-          Started Northwind Ops to keep things simple — no bloated retainers, 
-          just practical help where it's needed.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2>Contact</h2>
-    <ul class="contact-list">
-      <li>Email: <a href="mailto:momotzuyu@icloud.com">momotzuyu@icloud.com</a></li>
-      <li>Domain: northwindops.dpdns.org</li>
-      <li>Location: Taiwan</li>
+<!-- ═══════════ NAV ═══════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">Northwind<span>Ops</span></a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#articles">Articles</a></li>
     </ul>
-  </section>
+    <a href="#contact" class="nav-cta">Get in touch</a>
+  </div>
+</nav>
 
-  <footer>
-    &copy; 2026 Northwind Ops. All rights reserved.
-  </footer>
+<!-- ═══════════ HERO ═══════════ -->
+<header class="hero">
+  <div class="hero-inner">
+    <h1>Operations &amp; <span>AI Consulting</span> for Small Teams</h1>
+    <p>
+      Streamline your workflows, adopt the right AI tools, and stop wasting time on manual processes. Practical consulting, no corporate fluff.
+    </p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn-primary">Start a conversation</a>
+      <a href="#services" class="btn-secondary">See what we do</a>
+    </div>
+  </div>
+</header>
 
-</div>
+<!-- ═══════════ SERVICES ═══════════ -->
+<section id="services">
+  <div class="section-inner">
+    <div class="section-label">What we offer</div>
+    <h2>Services</h2>
+    <p class="section-desc">We focus on the intersection of operations and AI — helping small teams work smarter without the overhead of big consulting firms.</p>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="icon">&#9881;</div>
+        <h3>Operations Review</h3>
+        <p>End-to-end process audit — we map your current workflows, identify bottlenecks, and build a practical improvement plan that fits your team size.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">&#9889;</div>
+        <h3>AI Tooling &amp; Setup</h3>
+        <p>ChatGPT, Claude, Copilot — we help you pick the right tools, set up team accounts, and train your people so they actually use them.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">&#9776;</div>
+        <h3>Workflow Automation</h3>
+        <p>From email triage to reporting pipelines — we design and implement automations that save hours every week.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">&#9654;</div>
+        <h3>OpenAI Business Setup</h3>
+        <p>ChatGPT Team &amp; Business deployment, seat management, custom GPT configuration, and ongoing optimization for organizations.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">&#9830;</div>
+        <h3>Data &amp; Analytics</h3>
+        <p>Clean up messy spreadsheets, set up dashboards, and get your data into a state where it actually helps you make decisions.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">&#9998;</div>
+        <h3>Tech Advisory</h3>
+        <p>Not sure which tools are worth paying for? We cut through the hype and give you honest, vendor-neutral recommendations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PROCESS ═══════════ -->
+<section id="process">
+  <div class="section-inner">
+    <div class="section-label">How we work</div>
+    <h2>Our Process</h2>
+    <p class="section-desc">Simple, transparent, and adapted to your timeline. No long-term contracts — start with a single project and scale from there.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Discovery Call</h4>
+        <p>Free 30-minute chat to understand what you need and whether we're a good fit.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Assessment</h4>
+        <p>We review your current setup and deliver a focused report with recommendations.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Implementation</h4>
+        <p>Hands-on work — tools configured, workflows built, team trained. Done, not just documented.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Review &amp; Iterate</h4>
+        <p>Check-in after a few weeks, measure impact, tweak what needs adjusting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ABOUT ═══════════ -->
+<section id="about">
+  <div class="section-inner">
+    <div class="section-label">Who we are</div>
+    <h2>About</h2>
+    <div class="about-content">
+      <div class="about-avatar">W</div>
+      <div class="about-text">
+        <p><strong>Wei-Chen Lin</strong> — Founder &amp; Lead Consultant</p>
+        <p>
+          I started Northwind Ops after spending several years handling operations and data work for regional teams across Asia.
+          I saw too many small businesses stuck with messy processes and overpriced tools — while bigger companies had entire ops departments.
+        </p>
+        <p>
+          Today I work with teams of 3 to 30 people who need practical help adopting AI and streamlining how they work.
+          Based in Taiwan, working remotely with clients in Asia, the US, and Europe.
+        </p>
+        <p>
+          No bloated retainers, no buzzword bingo. Just honest advice and work that ships.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ARTICLES ═══════════ -->
+<section id="articles">
+  <div class="section-inner">
+    <div class="section-label">Writing</div>
+    <h2>Articles &amp; Notes</h2>
+    <p class="section-desc">Thoughts on operations, AI tools, and building better workflows — from the trenches, not the conference stage.</p>
+    <ul class="articles-list">
+      <li>
+        <a href="#">ChatGPT Business vs Plus: What Small Teams Should Know</a>
+        <span class="date">August 2026</span>
+      </li>
+      <li>
+        <a href="#">How We Cut Our Client's Weekly Reporting from 8 Hours to 45 Minutes</a>
+        <span class="date">June 2026</span>
+      </li>
+      <li>
+        <a href="#">A Practical Guide to AI Tool Selection for Non-Technical Teams</a>
+        <span class="date">March 2026</span>
+      </li>
+      <li>
+        <a href="#">Why Most Workflow Automation Projects Fail (And How to Avoid It)</a>
+        <span class="date">January 2026</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════ CONTACT ═══════════ -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="section-label">Let's talk</div>
+    <h2>Contact</h2>
+    <p class="section-desc">Reach out for a free discovery call or just to ask a question. No pressure, no sales pitch.</p>
+    <div class="contact-grid">
+      <div>
+        <ul class="contact-info">
+          <li><strong>Email</strong><br><a href="mailto:momotzuyu@icloud.com">momotzuyu@icloud.com</a></li>
+          <li><strong>Domain</strong><br>northwindops.dpdns.org</li>
+          <li><strong>Location</strong><br>Taiwan (UTC+8)</li>
+        </ul>
+      </div>
+      <div>
+        <p style="color:var(--muted);font-size:14px;">
+          Typical response time: within 24 hours on business days.
+          Available for remote consulting worldwide.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <h4>Northwind Ops</h4>
+        <p style="font-size:14px; line-height:1.6;">Operations &amp; AI consulting for small teams. Based in Taiwan, working worldwide.</p>
+      </div>
+      <div>
+        <h4>Site</h4>
+        <ul>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#articles">Articles</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:momotzuyu@icloud.com">momotzuyu@icloud.com</a></li>
+          <li>northwindops.dpdns.org</li>
+          <li>Taiwan</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Northwind Ops. All rights reserved.</span>
+      <span class="footer-brand">Northwind<span style="color:#9ca3af;">Ops</span></span>
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>
