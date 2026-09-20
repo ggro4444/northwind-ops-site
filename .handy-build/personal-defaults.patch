@@ -64,3 +64,80 @@ diff --git a/src-tauri/src/settings.rs b/src-tauri/src/settings.rs
 @@
 -        reliable_paste: false,
 +        reliable_paste: true,
+@@
+-const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 2;
++const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 3;
+@@
+     if stored_schema_version < 2 {
+         // transcribe.cpp 0.2 replaced integer registry indices with opaque
+         // process-local handles. Clear every old index once.
+         settings.transcribe_gpu_device = default_transcribe_gpu_device();
+         settings.settings_schema_version = CURRENT_SETTINGS_SCHEMA_VERSION;
+         updated = true;
+     }
++    if stored_schema_version < 3 {
++        // Personal V1.1 migration. Existing Handy installs keep their persisted
++        // settings across upgrades, so defaults alone are not enough.
++        settings.selected_language = "zh-Hant".to_string();
++        settings.post_process_enabled = true;
++        settings.reliable_paste = true;
++        settings.filler_word_removal_enabled = false;
++        settings.update_checks_enabled = false;
++
++        let personal_prompt = default_post_process_prompts()
++            .into_iter()
++            .next()
++            .expect("personal build always has a default cleanup prompt");
++        let prompt_id = personal_prompt.id.clone();
++        if let Some(existing) = settings
++            .post_process_prompts
++            .iter_mut()
++            .find(|prompt| prompt.id == prompt_id)
++        {
++            *existing = personal_prompt;
++        } else {
++            settings.post_process_prompts.push(personal_prompt);
++        }
++        settings.post_process_selected_prompt_id = Some(prompt_id);
++        settings.settings_schema_version = CURRENT_SETTINGS_SCHEMA_VERSION;
++        updated = true;
++    }
+@@
+     fn default_settings_json() -> serde_json::Value {
+         serde_json::to_value(get_default_settings()).unwrap()
+     }
+ 
++    #[test]
++    fn personal_v1_1_migrates_existing_handy_settings_once() {
++        let mut settings = get_default_settings();
++        settings.settings_schema_version = 2;
++        settings.selected_language = "auto".to_string();
++        settings.post_process_enabled = false;
++        settings.reliable_paste = false;
++        settings.filler_word_removal_enabled = true;
++        settings.update_checks_enabled = true;
++        settings.post_process_selected_prompt_id = None;
++        settings.post_process_prompts[0].name = "Legacy Prompt".to_string();
++        settings.post_process_prompts[0].prompt = "legacy".to_string();
++
++        let stored = serde_json::to_value(&settings).unwrap();
++        assert!(apply_settings_migrations(&mut settings, &stored));
++
++        assert_eq!(settings.settings_schema_version, 3);
++        assert_eq!(settings.selected_language, "zh-Hant");
++        assert!(settings.post_process_enabled);
++        assert!(settings.reliable_paste);
++        assert!(!settings.filler_word_removal_enabled);
++        assert!(!settings.update_checks_enabled);
++        assert_eq!(
++            settings.post_process_selected_prompt_id.as_deref(),
++            Some("default_improve_transcriptions")
++        );
++        let prompt = settings
++            .post_process_prompts
++            .iter()
++            .find(|prompt| prompt.id == "default_improve_transcriptions")
++            .unwrap();
++        assert_eq!(prompt.name, "Personal Dictation Cleanup");
++    }
++
