@@ -1,4 +1,4 @@
-name: Build Handy Personal V1
+name: Build Handy Personal V1.1
 
 on:
   push:
@@ -36,15 +36,17 @@ jobs:
           git status --short
           git rev-parse HEAD
 
-      - name: Apply Personal V1 patches
-        shell: pwsh
+      - name: Apply Personal V1.1 source transform
+        shell: bash
         run: |
-          Set-Location handy-src
-          git apply --check ../.handy-build/handy-personal-v1.patch
-          git apply ../.handy-build/handy-personal-v1.patch
-          git apply --check ../.handy-build/personal-defaults.patch
-          git apply ../.handy-build/personal-defaults.patch
+          set -euo pipefail
+          python .handy-build/apply_personal_v1_1.py --self-test
+          python .handy-build/apply_personal_v1_1.py handy-src
+          cd handy-src
           git diff --check
+          grep -F 'BuiltinConfig::S2twp' src-tauri/src/actions.rs
+          grep -F 'Personal Dictation Cleanup' src-tauri/src/settings.rs
+          grep -F 'CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 3' src-tauri/src/settings.rs
           git diff -- src-tauri/src/actions.rs src-tauri/src/settings.rs
 
       - name: Disable upstream signing and updater artifacts for private unsigned build
@@ -146,6 +148,16 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
         run: bun run tauri build --bundles nsis
 
+      - name: Verify compiled personal build markers
+        shell: pwsh
+        run: |
+          $exe = "handy-src/src-tauri/target/release/handy.exe"
+          if (-not (Test-Path $exe)) { throw "release handy.exe missing" }
+          $bytes = [System.IO.File]::ReadAllBytes($exe)
+          $text = [System.Text.Encoding]::UTF8.GetString($bytes)
+          if (-not $text.Contains("Personal Dictation Cleanup")) { throw "personal cleanup prompt missing from release binary" }
+          if (-not $text.Contains("dictation cleanup engine")) { throw "personal cleanup prompt body missing from release binary" }
+
       - name: Collect build outputs
         shell: pwsh
         run: |
@@ -159,7 +171,7 @@ jobs:
       - name: Upload Windows build
         uses: actions/upload-artifact@v4
         with:
-          name: Handy-Personal-V1-Windows-x64
+          name: Handy-Personal-V1.1-Windows-x64
           path: artifact/*
           if-no-files-found: error
           retention-days: 30
