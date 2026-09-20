@@ -1,0 +1,77 @@
+diff --git a/src-tauri/src/settings.rs b/src-tauri/src/settings.rs
+--- a/src-tauri/src/settings.rs
++++ b/src-tauri/src/settings.rs
+@@
+ pub const SETTINGS_STORE_PATH: &str = "settings_store.json";
++const PERSONAL_SETTINGS_MIGRATION_VERSION: u64 = 1;
++
++fn apply_personal_settings_migration(settings: &mut AppSettings) {
++    settings.selected_language = "zh-Hant".to_string();
++    settings.post_process_enabled = true;
++    settings.reliable_paste = true;
++    settings.filler_word_removal_enabled = false;
++    settings.update_checks_enabled = false;
++
++    let personal_prompt = default_post_process_prompts()
++        .into_iter()
++        .next()
++        .expect("personal build always has a default cleanup prompt");
++    let prompt_id = personal_prompt.id.clone();
++    if let Some(existing) = settings
++        .post_process_prompts
++        .iter_mut()
++        .find(|prompt| prompt.id == prompt_id)
++    {
++        *existing = personal_prompt;
++    } else {
++        settings.post_process_prompts.push(personal_prompt);
++    }
++    settings.post_process_selected_prompt_id = Some(prompt_id);
++}
+@@
+     if ensure_post_process_defaults(&mut settings) {
+         store.set("settings", serde_json::to_value(&settings).unwrap());
+     }
++
++    let personal_migration_version = store
++        .get("handy_personal_settings_migration_version")
++        .and_then(|value| value.as_u64())
++        .unwrap_or(0);
++    if personal_migration_version < PERSONAL_SETTINGS_MIGRATION_VERSION {
++        apply_personal_settings_migration(&mut settings);
++        store.set("settings", serde_json::to_value(&settings).unwrap());
++        store.set(
++            "handy_personal_settings_migration_version",
++            serde_json::json!(PERSONAL_SETTINGS_MIGRATION_VERSION),
++        );
++    }
+ 
+     settings
+ }
+@@
+     fn default_settings_json() -> serde_json::Value {
+         serde_json::to_value(get_default_settings()).unwrap()
+     }
++
++    #[test]
++    fn personal_settings_migration_forces_required_personal_defaults() {
++        let mut settings = get_default_settings();
++        settings.selected_language = "auto".to_string();
++        settings.post_process_enabled = false;
++        settings.reliable_paste = false;
++        settings.filler_word_removal_enabled = true;
++        settings.update_checks_enabled = true;
++        settings.post_process_selected_prompt_id = None;
++
++        apply_personal_settings_migration(&mut settings);
++
++        assert_eq!(settings.selected_language, "zh-Hant");
++        assert!(settings.post_process_enabled);
++        assert!(settings.reliable_paste);
++        assert!(!settings.filler_word_removal_enabled);
++        assert!(!settings.update_checks_enabled);
++        assert_eq!(
++            settings.post_process_selected_prompt_id.as_deref(),
++            Some("default_improve_transcriptions")
++        );
++    }
