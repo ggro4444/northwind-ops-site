@@ -107,7 +107,7 @@ fn build_system_prompt(prompt_template: &str, custom_words: &[String]) -> String
     )
     text = replace_once(
         text,
-        '// Legacy mode: Replace `${output}` variable in the prompt with the actual text\n'
+        '// Legacy mode: Replace ${output} variable in the prompt with the actual text\n'
         '    let processed_prompt = prompt.replace("${output}", transcription);',
         '// Legacy mode: render the transcription and custom words into one prompt.\n'
         '    let processed_prompt = render_prompt_template(&prompt, transcription, &settings.custom_words);',
