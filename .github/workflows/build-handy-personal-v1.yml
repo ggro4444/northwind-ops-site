@@ -1,0 +1,165 @@
+name: Build Handy Personal V1
+
+on:
+  push:
+    branches:
+      - build/handy-personal-v1
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      HANDY_SHA: 8f9cf53cd1410cda26beea39ff802ac306e39585
+      ORT_VERSION: 1.24.2
+
+    steps:
+      - name: Checkout build harness
+        uses: actions/checkout@v5
+
+      - name: Enable Windows long paths
+        shell: pwsh
+        run: |
+          New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+          git config --system core.longpaths true
+
+      - name: Checkout pinned Handy source
+        shell: pwsh
+        run: |
+          git clone https://github.com/cjpais/Handy.git handy-src
+          Set-Location handy-src
+          git checkout $env:HANDY_SHA
+          git status --short
+          git rev-parse HEAD
+
+      - name: Apply Personal V1 patches
+        shell: pwsh
+        run: |
+          Set-Location handy-src
+          git apply --check ../.handy-build/handy-personal-v1.patch
+          git apply ../.handy-build/handy-personal-v1.patch
+          git apply --check ../.handy-build/personal-defaults.patch
+          git apply ../.handy-build/personal-defaults.patch
+          git diff --check
+          git diff -- src-tauri/src/actions.rs src-tauri/src/settings.rs
+
+      - name: Disable upstream signing and updater artifacts for private unsigned build
+        shell: pwsh
+        run: |
+          Set-Location handy-src
+          $path = "src-tauri/tauri.conf.json"
+          $json = Get-Content $path -Raw | ConvertFrom-Json
+          $json.bundle.createUpdaterArtifacts = $false
+          $json.bundle.windows.PSObject.Properties.Remove("signCommand")
+          $json | ConvertTo-Json -Depth 100 | Set-Content $path -Encoding utf8
+
+      - name: Download Silero VAD runtime asset
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path handy-src/src-tauri/resources/models | Out-Null
+          Invoke-WebRequest -Uri "https://blob.handy.computer/silero_vad_v4.onnx" -OutFile "handy-src/src-tauri/resources/models/silero_vad_v4.onnx"
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Setup Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "handy-src/src-tauri -> target"
+          cache-bin: false
+          key: handy-personal-v1-windows-x64
+
+      - name: Install Vulkan SDK
+        uses: humbletim/install-vulkan-sdk@v1.2
+        with:
+          version: 1.4.309.0
+          cache: true
+
+      - name: Install SPIRV-Headers
+        shell: pwsh
+        run: |
+          vcpkg install spirv-headers:x64-windows
+          if ($LASTEXITCODE -ne 0) { throw "vcpkg install spirv-headers failed" }
+          $prefix = "$env:VCPKG_INSTALLATION_ROOT/installed/x64-windows" -replace '\\','/'
+          $combined = if ($env:CMAKE_PREFIX_PATH) { "$prefix;$env:CMAKE_PREFIX_PATH" } else { $prefix }
+          Add-Content $env:GITHUB_ENV "CMAKE_PREFIX_PATH=$combined"
+
+      - name: Install ONNX Runtime
+        shell: pwsh
+        run: |
+          Set-Location handy-src
+          $url = "https://github.com/microsoft/onnxruntime/releases/download/v$env:ORT_VERSION/onnxruntime-win-x64-$env:ORT_VERSION.zip"
+          Invoke-WebRequest -Uri $url -OutFile ort.zip
+          Expand-Archive -Path ort.zip -DestinationPath ort-dist -Force
+          $ortLib = (Resolve-Path "ort-dist/onnxruntime-win-x64-$env:ORT_VERSION/lib").Path
+          Add-Content $env:GITHUB_ENV "ORT_LIB_LOCATION=$ortLib"
+          Add-Content $env:GITHUB_ENV "ORT_PREFER_DYNAMIC_LINK=1"
+
+      - name: Locate VC++ runtime for app-local bundling
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsRoot = & $vswhere -latest -products * -property installationPath
+          if (-not $vsRoot) { throw "vswhere found no Visual Studio installation" }
+          $versionFile = Join-Path $vsRoot "VC\Auxiliary\Build\Microsoft.VCRedistVersion.default.txt"
+          $redistVersion = (Get-Content $versionFile).Trim()
+          $archDir = Join-Path $vsRoot "VC\Redist\MSVC\$redistVersion\x64"
+          $crt = Get-ChildItem $archDir -Directory -Filter "Microsoft.VC*.CRT" | Sort-Object Name | Select-Object -Last 1
+          $omp = Get-ChildItem $archDir -Directory -Filter "Microsoft.VC*.OpenMP" | Sort-Object Name | Select-Object -Last 1
+          if (-not $crt -or -not $omp) { throw "VC++ redistributable directories missing" }
+          $dirs = "$($crt.FullName);$($omp.FullName)"
+          Add-Content $env:GITHUB_ENV "HANDY_VC_REDIST_DIRS=$dirs"
+
+      - name: Install frontend dependencies
+        shell: bash
+        working-directory: handy-src
+        run: bun install --frozen-lockfile
+
+      - name: Verify Rust formatting
+        shell: bash
+        working-directory: handy-src
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+
+      - name: Run Rust library tests
+        shell: bash
+        working-directory: handy-src
+        run: cargo test --manifest-path src-tauri/Cargo.toml --lib
+
+      - name: Build frontend
+        shell: bash
+        working-directory: handy-src
+        run: bun run build
+
+      - name: Build unsigned Windows NSIS package
+        shell: bash
+        working-directory: handy-src
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ""
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
+        run: bun run tauri build --bundles nsis
+
+      - name: Collect build outputs
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifact | Out-Null
+          Get-ChildItem -Path handy-src/src-tauri/target/release/bundle/nsis -Filter *.exe -ErrorAction SilentlyContinue | Copy-Item -Destination artifact
+          Get-ChildItem -Path handy-src/src-tauri/target/release -Filter handy.exe -ErrorAction SilentlyContinue | Copy-Item -Destination artifact
+          Copy-Item .handy-build/cleanup_prompt.txt artifact/cleanup_prompt.txt
+          Get-FileHash artifact/* -Algorithm SHA256 | Format-Table -AutoSize | Out-String | Set-Content artifact/SHA256SUMS.txt
+          Get-ChildItem artifact | Format-Table Name,Length -AutoSize
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Handy-Personal-V1-Windows-x64
+          path: artifact/*
+          if-no-files-found: error
+          retention-days: 30
