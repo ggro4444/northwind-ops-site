@@ -1,4 +1,4 @@
-name: Build Handy Personal V1.1
+name: Build Handy Personal V1.2
 
 on:
   push:
@@ -36,17 +36,26 @@ jobs:
           git status --short
           git rev-parse HEAD
 
-      - name: Apply Personal V1.1 source transform
+      - name: Stamp Personal V1.2 version
+        shell: pwsh
+        run: |
+          Set-Location handy-src
+          (Get-Content "src-tauri/tauri.conf.json" -Raw).Replace('"version": "0.9.7"', '"version": "0.9.8"') | Set-Content "src-tauri/tauri.conf.json" -Encoding utf8
+          (Get-Content "src-tauri/Cargo.toml" -Raw).Replace('version = "0.9.7"', 'version = "0.9.8"') | Set-Content "src-tauri/Cargo.toml" -Encoding utf8
+          Select-String -Path "src-tauri/tauri.conf.json" -Pattern '"version": "0.9.8"'
+          Select-String -Path "src-tauri/Cargo.toml" -Pattern 'version = "0.9.8"'
+
+      - name: Apply Personal V1.2 source transform
         shell: bash
         run: |
           set -euo pipefail
-          python .handy-build/apply_personal_v1_1.py --self-test
-          python .handy-build/apply_personal_v1_1.py handy-src
+          python .handy-build/apply_personal_v1_2.py --self-test
+          python .handy-build/apply_personal_v1_2.py handy-src
           cd handy-src
           git diff --check
           grep -F 'BuiltinConfig::S2twp' src-tauri/src/actions.rs
           grep -F 'Personal Dictation Cleanup' src-tauri/src/settings.rs
-          grep -F 'CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 3' src-tauri/src/settings.rs
+          grep -F 'PERSONAL_SETTINGS_MIGRATION_VERSION' src-tauri/src/settings.rs
           git diff -- src-tauri/src/actions.rs src-tauri/src/settings.rs
 
       - name: Disable upstream signing and updater artifacts for private unsigned build
@@ -171,7 +180,7 @@ jobs:
       - name: Upload Windows build
         uses: actions/upload-artifact@v4
         with:
-          name: Handy-Personal-V1.1-Windows-x64
+          name: Handy-Personal-V1.2-Windows-x64
           path: artifact/*
           if-no-files-found: error
           retention-days: 30
