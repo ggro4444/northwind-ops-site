@@ -1,0 +1,1 @@
+Trigger build after default-branch workflow registration.
