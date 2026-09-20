@@ -141,12 +141,6 @@ def patch_settings(text: str) -> str:
         'fn default_post_process_enabled() -> bool {\n    true\n}',
         "post processing default",
     )
-    text = replace_once(
-        text,
-        'fn default_filler_word_removal_enabled() -> bool {\n    true\n}',
-        'fn default_filler_word_removal_enabled() -> bool {\n    false\n}',
-        "filler removal default",
-    )
 
     prompt_fn = f'''fn default_post_process_prompts() -> Vec<LLMPrompt> {{
     vec![LLMPrompt {{
@@ -190,7 +184,6 @@ fn apply_personal_settings_migration(settings: &mut AppSettings) {
     settings.selected_language = "zh-Hant".to_string();
     settings.post_process_enabled = true;
     settings.reliable_paste = true;
-    settings.filler_word_removal_enabled = false;
     settings.update_checks_enabled = false;
 
     let personal_prompt = default_post_process_prompts()
@@ -252,7 +245,6 @@ fn apply_personal_settings_migration(settings: &mut AppSettings) {
         settings.selected_language = "auto".to_string();
         settings.post_process_enabled = false;
         settings.reliable_paste = false;
-        settings.filler_word_removal_enabled = true;
         settings.update_checks_enabled = true;
         settings.post_process_selected_prompt_id = None;
 
@@ -261,7 +253,6 @@ fn apply_personal_settings_migration(settings: &mut AppSettings) {
         assert_eq!(settings.selected_language, "zh-Hant");
         assert!(settings.post_process_enabled);
         assert!(settings.reliable_paste);
-        assert!(!settings.filler_word_removal_enabled);
         assert!(!settings.update_checks_enabled);
         assert_eq!(
             settings.post_process_selected_prompt_id.as_deref(),
